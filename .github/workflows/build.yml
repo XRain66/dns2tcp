@@ -66,7 +66,7 @@ jobs:
           CFLAGS="-g -O2 -Wall -Wextra -Werror=implicit-function-declaration" ./configure --host=x86_64-w64-mingw32
           make
           mkdir -p artifacts/windows-x64
-          cp client/dns2tcpc.exe server/dns2tcpd.exe artifacts/windows-x64/
+          cp client/dns2tcpc.exe artifacts/windows-x64/
           
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
