@@ -36,6 +36,8 @@
 #include "myerror.h"
 #include "dns.h"
 
+int debug = 0;  // Define debug variable here
+
 /**
  * @brief main part
  * @retval 0 on success

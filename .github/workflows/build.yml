@@ -21,7 +21,7 @@ jobs:
       - name: Build x86_64
         run: |
           autoreconf -fi
-          ./configure
+          CFLAGS="-g -O2 -Wall -Wextra -Werror=implicit-function-declaration" ./configure
           make
           mkdir -p artifacts/linux-x86_64
           cp client/dns2tcpc server/dns2tcpd artifacts/linux-x86_64/
@@ -30,7 +30,7 @@ jobs:
         run: |
           sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
           make clean
-          ./configure --host=aarch64-linux-gnu
+          CFLAGS="-g -O2 -Wall -Wextra -Werror=implicit-function-declaration" ./configure --host=aarch64-linux-gnu
           make CC=aarch64-linux-gnu-gcc
           mkdir -p artifacts/linux-arm64
           cp client/dns2tcpc server/dns2tcpd artifacts/linux-arm64/
@@ -63,7 +63,7 @@ jobs:
         shell: msys2 {0}
         run: |
           autoreconf -fi
-          ./configure --host=x86_64-w64-mingw32
+          CFLAGS="-g -O2 -Wall -Wextra -Werror=implicit-function-declaration" ./configure --host=x86_64-w64-mingw32
           make
           mkdir -p artifacts/windows-x64
           cp client/dns2tcpc.exe server/dns2tcpd.exe artifacts/windows-x64/

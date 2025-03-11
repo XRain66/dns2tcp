@@ -42,6 +42,8 @@
 #include "myerror.h"
 #include "log.h"
 
+int debug = 0;  // Define debug variable here
+
 int			detach_process(t_conf *conf)
 {
   int			fd;
