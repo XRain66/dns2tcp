@@ -10,73 +10,66 @@ on:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [x86_64, aarch64]
     steps:
       - uses: actions/checkout@v4
       
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential autoconf automake gcc-multilib
-          if [ "${{ matrix.arch }}" = "aarch64" ]; then
-            sudo apt-get install -y gcc-aarch64-linux-gnu
-          fi
+          sudo apt-get install -y build-essential autoconf automake libtool
 
-      - name: Configure and Build
+      - name: Build x86_64
         run: |
           autoreconf -fi
           ./configure
-          if [ "${{ matrix.arch }}" = "aarch64" ]; then
-            make CC=aarch64-linux-gnu-gcc
-          else
-            make
-          fi
+          make
+          mkdir -p artifacts/linux-x86_64
+          cp client/dns2tcpc server/dns2tcpd artifacts/linux-x86_64/
+
+      - name: Setup ARM64 cross-compilation
+        run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          make clean
+          ./configure --host=aarch64-linux-gnu
+          make CC=aarch64-linux-gnu-gcc
+          mkdir -p artifacts/linux-arm64
+          cp client/dns2tcpc server/dns2tcpd artifacts/linux-arm64/
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dns2tcp-linux-${{ matrix.arch }}
-          path: |
-            client/dns2tcpc
-            server/dns2tcpd
+          name: dns2tcp-linux
+          path: artifacts/*
 
   build-windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        include:
-          - arch: x64
-            msystem: MINGW64
-            mingw_prefix: mingw-w64-x86_64
-          - arch: arm64
-            msystem: CLANGARM64
-            mingw_prefix: mingw-w64-clang-aarch64
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: ${{ matrix.msystem }}
+          msystem: MINGW64
           update: true
           install: >-
-            ${{ matrix.mingw_prefix }}-gcc
-            ${{ matrix.mingw_prefix }}-autotools
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-autotools
+            autoconf
+            automake
+            libtool
             make
             
-      - name: Configure and Build
+      - name: Build x64
         shell: msys2 {0}
         run: |
           autoreconf -fi
-          ./configure
+          ./configure --host=x86_64-w64-mingw32
           make
+          mkdir -p artifacts/windows-x64
+          cp client/dns2tcpc.exe server/dns2tcpd.exe artifacts/windows-x64/
           
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dns2tcp-windows-${{ matrix.arch }}
-          path: |
-            client/dns2tcpc.exe
-            server/dns2tcpd.exe 
+          name: dns2tcp-windows
+          path: artifacts/* 
