@@ -1,0 +1,28 @@
+# Project specific
+note.md
+projectinfo.md
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.exe
+*.dll
+*.dylib
+.deps/
+.libs/
+autom4te.cache/
+config.log
+config.status
+stamp-h1
+Makefile
+
+# IDE specific
+.cursor/
+.vscode/
+.idea/
+
+# Temporary files
+*~
+*.swp
+*.swo 
